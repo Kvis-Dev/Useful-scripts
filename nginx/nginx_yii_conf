@@ -1,0 +1,44 @@
+server {
+    listen 80;
+    server_name test.bannertype.com;
+
+    set $domain_path "/var/www/project/web";
+
+    root $domain_path;
+    index index.php index.html index.htm;
+
+    location / {
+        try_files $uri $uri/ /index.php$is_args$args;
+    }
+
+    location ~ \.php$ {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $domain_path$fastcgi_script_name;
+        fastcgi_pass php_workers;
+        try_files $uri =404;
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
