@@ -23,3 +23,7 @@ Runs ssh commands on your server
 
 Make backups of MySQL database, puts it into separate directory.
 Makes N backup files per day (depends on how many times you run it), removes all files but the last from previous days' backup folders.
+
+*install_venvwrapper.sh*
+
+Installs virtualenv and virtualenvwrapper and adds correct data to .hgrc
