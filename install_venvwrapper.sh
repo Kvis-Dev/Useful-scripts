@@ -3,7 +3,7 @@
 vdir=~/venvs
 bfile=~/.bashrc
 
-vw=$( which virtualenvwrapper.sh )
+
 py3=$( which python3 )
 
 installer="#Kvis-Dev venvwrapper installer"
@@ -32,6 +32,7 @@ if am_I_sourced -v; then
 		echo "Scrip already installed"
 	else
 		sudo pip3 install -U virtualenv virtualenvwrapper
+		vw=$( which virtualenvwrapper.sh )
 
 		export WORKON_HOME="$vdir"
 		export VIRTUALENVWRAPPER_PYTHON="$py3"
