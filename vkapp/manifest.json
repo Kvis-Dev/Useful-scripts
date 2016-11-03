@@ -1,0 +1,30 @@
+{
+  "name": "Hello World!",
+  "description": "My first Chrome App.",
+  "version": "0.1",
+  "manifest_version": 2,
+  "permissions": [
+    "https://*.vk.com/",
+    "http://*.vk.com/",
+    "https://vk.com/",
+    "http://vk.com/",
+    "webview",
+    "alwaysOnTopWindows",
+    "storage",
+    "tabs"
+  ],
+  "app": {
+    "background": {
+      "scripts": ["background.js"]
+    }
+  },
+  "webview": {
+    "partitions": [
+      {
+        "name": "static",
+        "accessible_resources": ["vkcontent.js"]
+      }
+    ]
+  }
+ // "icons": { "16": "calculator-16.png", "128": "calculator-128.png" }
+}

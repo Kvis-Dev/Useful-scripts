@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style type="text/css">
+		html, body{
+			margin: 0;
+			padding: 0;
+			height:100%;
+		}
+		.titlebar{
+			-webkit-app-region: drag;
+			height: 30px;
+			background-color: #252727;
+			color: white;
+		}
+		#title{
+			z-index: 0;
+			height: 100%;
+			padding: 0 0 0 20px;
+			font-size: 16px;
+			line-height: 30px;
+		}
+		.buttons{
+			-webkit-app-region: no-drag;
+			z-index: 1;
+			position: absolute;
+			float: right;
+			top: 4px;
+			right: 8px;
+		}
+		.buttons button{
+			background-color: #4e4e4e;
+			border: 1px solid #989898;
+			color: aliceblue;
+			font-family: monospace;
+			line-height: 18px;
+    	}
+	</style>
+</head>
+<body>
+<div class="titlebar">
+	<div id="title">
+		
+	</div>
+	<div class="buttons">
+		<button id="hide">_</button>
+
+		<button id="close">x</button>
+	</div>
+</div>
+<webview id="webview" src="" style="width:100%; height:100%"></webview>
+<script type="text/javascript" src="inner.js"></script>
+</body>
+</html>
