@@ -5,57 +5,58 @@ var $ = function(id) {
 var addWebview = function(src) {
 	var w = $('webview');
 
-	        w.addEventListener('newwindow', function(e) {
-          e.preventDefault();
-          // e.targetUrl contains the target URL of the original link click
-          // or window.open() call: use it to open your own window to it.
-          // Something to keep in mind: window.open() called from the
-          // app's event page is currently (Nov 2013) handicapped and buggy
-          // (e.g. it doesn't have access to local storage, including cookie
-          // store). You can try to use it here and below, but be prepare that
-          // it may sometimes produce bad results.
-          // chrome.app.window.create(e.targetUrl);
-          // chrome.tabs.create({
-          // 	url:e.targetUrl,
-          // });
-          window.open(e.targetUrl);
-        });
-
-
-w.addContentScripts([{
-		    name: 'myRule',
-		    matches: ['https://vk.com/*'],
-		    css: { files: ['smallvk.css'] },
-		    js: { files: ['vkcontent.js'] },
-		    run_at: 'document_start'
-		}]);
-	w.addEventListener('loadstop', function(e) {
-
-		
-
-		// w.insertCSS({
-		// 	file: 'smallvk.css'
-		// }, function() {console.log('ins')});
-
-
+	w.addEventListener('newwindow', function(e) {
+		e.preventDefault();
+		window.open(e.targetUrl);
 	});
 
-
+	w.addContentScripts([{
+	    name: 'myRule',
+	    matches: ['https://m.vk.com/*'],
+	    //css: { files: ['smallvk.css'] },
+	    js: { files: ['vkcontent.js'] },
+	    run_at: 'document_start'
+	}]);
+	w.addEventListener('loadstop', function(e) {});
 
 	w.setAttribute('src', src);
 };
 
 window.onload = function() {
-	addWebview('http://vk.com/im');
+	addWebview('http://m.vk.com/mail');
 };
 
-$('close').addEventListener('click', function(){
+$('close').addEventListener('click', function(event){
 	window.close();
+	event.stopPropagation();
 });
 
+$('hide').addEventListener('click', function(event){
+	chrome.runtime.sendMessage({action: "hide"}, function(response) {});
+	event.stopPropagation();
+	return false;
+});
+
+var md = 0;
+document.querySelector('.titlebar').addEventListener('mousedown', function(event){
+	md = event.timeStamp;
+});
+
+document.querySelector('.titlebar').addEventListener('mouseup', function(event){
+	event.stopPropagation();
+	if (event.timeStamp - md < 400) {
+		chrome.runtime.sendMessage({action: "titleclick"}, function(response) {});
+	}
+});
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	if (request.action == "title"){
 		$('title').innerHTML = request.data;
+
+		if (request.messages) {
+			document.querySelector('.titlebar').classList.add('noisy');
+		} else {
+			document.querySelector('.titlebar').classList.remove('noisy');
+		}
 	}
 });

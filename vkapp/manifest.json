@@ -1,6 +1,6 @@
 {
-  "name": "Hello World!",
-  "description": "My first Chrome App.",
+  "name": "Vk panel",
+  "description": "Mini window with vk.com site inside",
   "version": "0.1",
   "manifest_version": 2,
   "permissions": [
@@ -10,8 +10,7 @@
     "http://vk.com/",
     "webview",
     "alwaysOnTopWindows",
-    "storage",
-    "tabs"
+    "storage"
   ],
   "app": {
     "background": {
@@ -25,6 +24,6 @@
         "accessible_resources": ["vkcontent.js"]
       }
     ]
-  }
- // "icons": { "16": "calculator-16.png", "128": "calculator-128.png" }
+  },
+  "icons": { "16": "icon.png", "128": "icon.png" }
 }

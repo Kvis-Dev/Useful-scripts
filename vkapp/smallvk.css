@@ -3,12 +3,14 @@ div#side_bar {
 }
 
 .fl_r {
-    float: none;
+    float: none!important;
 }
 
 .im-page.im-page_classic{
     width:auto;
 }
+
+.pv_narrow_column_wrap,
 .im-page .im-page--history-new-bar_days>span,
 #page_header_cont,
 .im-audio-message-btn,
@@ -68,8 +70,6 @@ a.page_post_thumb_wrap.image_cover.page_post_thumb_last_row.fl_l {
     width: 150px !important;
 }
 
-
-
 li.im-mess.im_in._im_mess:first-child {
 }
 
@@ -81,7 +81,7 @@ li.im-mess.im_in._im_mess:first-child {
 }
 
 .emoji_smile_wrap {
-    right: 10px;
+    right: 10px !important;
 }
 
 #page_body {

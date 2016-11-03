@@ -8,11 +8,18 @@
 			padding: 0;
 			height:100%;
 		}
+		body{
+			padding-bottom: 30px;
+		}
 		.titlebar{
+			transition: all 0.5s ease; 
 			-webkit-app-region: drag;
 			height: 30px;
 			background-color: #252727;
 			color: white;
+		}
+		.titlebar.noisy{
+			background-color: #1ac51a;
 		}
 		#title{
 			z-index: 0;
@@ -36,20 +43,30 @@
 			font-family: monospace;
 			line-height: 18px;
     	}
+    	.titlebar.noisy .buttons button{
+    		background-color: #098c09;
+			border: 1px solid #159407;
+    	}
+    	.wvwrap{
+    		position: absolute;
+			top: 30px;
+			bottom: 0;
+			left: 0;
+			right: 0;
+    	}
 	</style>
 </head>
 <body>
 <div class="titlebar">
-	<div id="title">
-		
-	</div>
+	<div id="title">#</div>
 	<div class="buttons">
 		<button id="hide">_</button>
-
 		<button id="close">x</button>
 	</div>
 </div>
-<webview id="webview" src="" style="width:100%; height:100%"></webview>
+<div class="wvwrap">
+	<webview id="webview" src="" style="width:100%; height:100%"></webview>
+</div>
 <script type="text/javascript" src="inner.js"></script>
 </body>
 </html>
