@@ -2,6 +2,14 @@ var $ = function(id) {
 	return document.getElementById(id);
 };
 
+var messages = 0;
+
+function playSound(soundfile) {
+	var a = new Audio();
+	a.src = soundfile;
+	a.autoplay = true;
+};
+
 var addWebview = function(src) {
 	var w = $('webview');
 
@@ -11,11 +19,10 @@ var addWebview = function(src) {
 	});
 
 	w.addContentScripts([{
-	    name: 'myRule',
-	    matches: ['https://m.vk.com/*'],
-	    //css: { files: ['smallvk.css'] },
-	    js: { files: ['vkcontent.js'] },
-	    run_at: 'document_start'
+		name: 'myRule',
+		matches: ['https://m.vk.com/*'],
+		js: { files: ['vkcontent.js'] },
+		run_at: 'document_start'
 	}]);
 	w.addEventListener('loadstop', function(e) {});
 
@@ -52,11 +59,20 @@ document.querySelector('.titlebar').addEventListener('mouseup', function(event){
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	if (request.action == "title"){
 		$('title').innerHTML = request.data;
+	}
 
+	if (request.action == "messages"){
 		if (request.messages) {
 			document.querySelector('.titlebar').classList.add('noisy');
 		} else {
 			document.querySelector('.titlebar').classList.remove('noisy');
 		}
+
+		if (messages < request.messages) {
+			messages = request.messages;
+			playSound('./notification.mp3');
+		}
+
+		messages = request.messages;
 	}
 });

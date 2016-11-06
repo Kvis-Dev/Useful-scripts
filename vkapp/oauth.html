@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -62,16 +64,12 @@
 	</style>
 </head>
 <body>
-<div class="titlebar">
-	<div id="title">#</div>
-	<div class="buttons">
-		<button id="hide">_</button>
-		<button id="close">x</button>
-	</div>
-</div>
+
+	To provide more functionality, please, grant the permission
+
 <div class="wvwrap">
-	<webview id="webview" src="" style="width:100%; height:100%"></webview>
+	<webview id="webview" src="https://oauth.vk.com/authorize?client_id=5714729&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=offline,messages&response_type=token&v=5.52" style="width:100%; height:100%"></webview>
 </div>
-<script type="text/javascript" src="inner.js"></script>
+<script type="text/javascript" src="oauth.js"></script>
 </body>
 </html>
