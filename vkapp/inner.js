@@ -71,6 +71,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		if (messages < request.messages) {
 			messages = request.messages;
 			playSound('./notification.mp3');
+			chrome.runtime.sendMessage({action: "attention", m: messages}, function(response) {});
+
 		}
 
 		messages = request.messages;

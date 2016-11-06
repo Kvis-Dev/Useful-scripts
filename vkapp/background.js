@@ -1,9 +1,10 @@
 var createdWindow;
 var hidden = false;
+var  WIN_MIN_HEIGHT = 40;
 
 function isHidden(){
 	try {
-		return createdWindow.outerBounds.height <= 30;
+		return createdWindow.outerBounds.height <= WIN_MIN_HEIGHT;
 	} catch(e){
 		return false;
 	}
@@ -21,24 +22,33 @@ chrome.app.runtime.onLaunched.addListener(function() {
 		frame: 'none',
 	}, function(cw){
 		createdWindow = cw;
+		normalize();
+		createdWindow.onBoundsChanged.addListener(function() {
+			normalize();
+		});
+
 	});
 });
+
 
 function normalize(){
 
 
-	console.log(createdWindow);
-
-
 	chrome.system.display.getInfo(function(data){
-		console.log(data);
 
 		for (i in data){
 			var display = data[i];
 
-			if () {
-				
+			if (createdWindow.outerBounds.left > display.workArea.left && createdWindow.outerBounds.left < (display.workArea.left + display.workArea.width) ) {
+				if (createdWindow.outerBounds.top < 0) {
+					createdWindow.outerBounds.top = 0;
+				}
+
+				if (createdWindow.outerBounds.top > display.workArea.top + display.workArea.height) {
+					createdWindow.outerBounds.top = display.workArea.top + display.workArea.height - WIN_MIN_HEIGHT;
+				}
 			}
+
 		}
 
 	});
@@ -49,7 +59,7 @@ function show(){
 	var inh = 450;
 
 	createdWindow.outerBounds.height = 450;
-	createdWindow.outerBounds.top -= inh - 30;
+	createdWindow.outerBounds.top -= inh - WIN_MIN_HEIGHT;
 	
 	normalize();
 }
@@ -57,8 +67,8 @@ function show(){
 function hide(){
 	var inh = createdWindow.outerBounds.height;
 
-	createdWindow.outerBounds.height = 30;
-	createdWindow.outerBounds.top += inh - 30;
+	createdWindow.outerBounds.height = WIN_MIN_HEIGHT;
+	createdWindow.outerBounds.top += inh - WIN_MIN_HEIGHT;
 
 	normalize();
 }
@@ -92,7 +102,9 @@ function vkLongPolling(){
 		xhr.open(method, url, true);
 		xhr.onreadystatechange = function() {
 			if (xhr.readyState == 4) {
-				callback(JSON.parse(xhr.responseText));
+				try{
+					callback(JSON.parse(xhr.responseText));
+				} catch (e) {}
 			}
 		}
 		xhr.send();
@@ -206,6 +218,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	if (request.action == "titleclick"){
 		if (isHidden()){
 			show();
+		}
+	}
+
+	if (request.action == "attention"){
+		if (request.m){
+			createdWindow.drawAttention();
+		} else {
+			createdWindow.clearAttention();
 		}
 	}
 });
