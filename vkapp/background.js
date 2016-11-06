@@ -26,6 +26,23 @@ chrome.app.runtime.onLaunched.addListener(function() {
 
 function normalize(){
 
+
+	console.log(createdWindow);
+
+
+	chrome.system.display.getInfo(function(data){
+		console.log(data);
+
+		for (i in data){
+			var display = data[i];
+
+			if () {
+				
+			}
+		}
+
+	});
+
 }
 
 function show(){

@@ -10,7 +10,8 @@
     "http://vk.com/",
     "webview",
     "alwaysOnTopWindows",
-    "storage"
+    "storage",
+    "system.display"
   ],
   "app": {
     "background": {
