@@ -1,6 +1,6 @@
 var createdWindow;
 var hidden = false;
-var  WIN_MIN_HEIGHT = 40;
+var WIN_MIN_HEIGHT = 40;
 
 function isHidden(){
 	try {
@@ -153,7 +153,10 @@ function vkLongPolling(){
 		var url = "https://" + self.server + "?act=a_check&key=" + self.key + "&ts=" + self.ts + "&wait=25&mode=10&version=1";
 
 		self.ajax(url, 'GET', {}, function(data){
-
+			if (data.failed){
+				self.init();
+				return;
+			}
 			self.ts = data.ts;
 
 			self.ask();
@@ -185,9 +188,9 @@ function vkLongPolling(){
 					
 					if(!createdWindow) {
 						createWindow();
-						console.log('click');
+
 						window.setTimeout(function(){
-							console.log('click');
+
 							chrome.runtime.sendMessage({
 								action: "messages", 
 								messages: m,
