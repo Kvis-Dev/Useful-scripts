@@ -64,17 +64,17 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	if (request.action == "messages"){
 		if (request.messages) {
 			document.querySelector('.titlebar').classList.add('noisy');
+			chrome.runtime.sendMessage({action: "attention", m: 1}, function(response) {});
 		} else {
 			document.querySelector('.titlebar').classList.remove('noisy');
+			chrome.runtime.sendMessage({action: "attention", m: 0}, function(response) {});
 		}
 
 		if (messages < request.messages) {
 			messages = request.messages;
 			playSound('./notification.mp3');
-			chrome.runtime.sendMessage({action: "attention", m: messages}, function(response) {});
-
 		}
-
+		
 		messages = request.messages;
 	}
 });

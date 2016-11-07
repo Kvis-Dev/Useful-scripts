@@ -10,7 +10,7 @@ function isHidden(){
 	}
 }
 
-chrome.app.runtime.onLaunched.addListener(function() {
+function createWindow(){
 	chrome.app.window.create('vk.html',{
 		id: 'vk',
 		outerBounds:{
@@ -23,39 +23,41 @@ chrome.app.runtime.onLaunched.addListener(function() {
 	}, function(cw){
 		createdWindow = cw;
 		normalize();
+		
+		createdWindow.onClosed.addListener(function(){
+			createdWindow = null;
+		});
+
 		createdWindow.onBoundsChanged.addListener(function() {
 			normalize();
 		});
-
+		
 	});
+}
+chrome.app.runtime.onLaunched.addListener(function() {
+	createWindow();
 });
 
 
 function normalize(){
-
-
+	if (!createdWindow) return;
 	chrome.system.display.getInfo(function(data){
-
 		for (i in data){
 			var display = data[i];
-
 			if (createdWindow.outerBounds.left > display.workArea.left && createdWindow.outerBounds.left < (display.workArea.left + display.workArea.width) ) {
 				if (createdWindow.outerBounds.top < 0) {
 					createdWindow.outerBounds.top = 0;
 				}
-
 				if (createdWindow.outerBounds.top > display.workArea.top + display.workArea.height) {
 					createdWindow.outerBounds.top = display.workArea.top + display.workArea.height - WIN_MIN_HEIGHT;
 				}
 			}
-
 		}
-
 	});
-
 }
 
 function show(){
+	if (!createdWindow)return;
 	var inh = 450;
 
 	createdWindow.outerBounds.height = 450;
@@ -65,6 +67,7 @@ function show(){
 }
 
 function hide(){
+	if (!createdWindow)return;
 	var inh = createdWindow.outerBounds.height;
 
 	createdWindow.outerBounds.height = WIN_MIN_HEIGHT;
@@ -73,7 +76,6 @@ function hide(){
 	normalize();
 }
 function storage_set(key, value) {
-	// Save it using the Chrome extension storage API.
 	var dset = {};
 	dset[key] = value;
 
@@ -181,11 +183,23 @@ function vkLongPolling(){
 						}
 					}
 					
-					chrome.runtime.sendMessage({
-						action: "messages", 
-						messages: m,
-					}, function(response) {});
+					if(!createdWindow) {
+						createWindow();
+						console.log('click');
+						window.setTimeout(function(){
+							console.log('click');
+							chrome.runtime.sendMessage({
+								action: "messages", 
+								messages: m,
+							}, function(response) {});
 
+						}, 3000);
+					} else {
+						chrome.runtime.sendMessage({
+							action: "messages", 
+							messages: m,
+						}, function(response) {});
+					}
 				});
 			}
 
