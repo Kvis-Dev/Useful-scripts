@@ -59,18 +59,28 @@
 			left: 0;
 			right: 0;
     	}
+    	#resizer{
+			display: none;
+		}
+
+    	@media (min-height: 451px){
+    		#resizer{
+    			display: inline-block;
+    		}
+    	}
 	</style>
 </head>
 <body>
 <div class="titlebar">
 	<div id="title">Loading... </div>
 	<div class="buttons">
+		<button id="resizer">&#8689;</button>
 		<button id="hide">_</button>
 		<button id="close">x</button>
 	</div>
 </div>
 <div class="wvwrap">
-	<webview id="webview" src="" style="width:100%; height:100%"></webview>
+	<webview partition="persist:vk_window" id="webview" src="" style="width:100%; height:100%"></webview>
 </div>
 <script type="text/javascript" src="inner.js"></script>
 </body>

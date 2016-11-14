@@ -44,6 +44,14 @@ $('hide').addEventListener('click', function(event){
 	return false;
 });
 
+$('resizer').addEventListener('click', function(event){
+	chrome.runtime.sendMessage({action: "resize"}, function(response) {});
+	event.stopPropagation();
+	return false;
+});
+
+
+
 var md = 0;
 document.querySelector('.titlebar').addEventListener('mousedown', function(event){
 	md = event.timeStamp;

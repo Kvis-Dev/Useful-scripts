@@ -232,6 +232,19 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		}
 	}
 
+	if (request.action == "resize"){
+		if (!createdWindow)return;
+		var bt = createdWindow.outerBounds.top + createdWindow.outerBounds.height - 450;
+		var rt = createdWindow.outerBounds.left + createdWindow.outerBounds.width - 300;
+
+		createdWindow.outerBounds.height = 450;
+		createdWindow.outerBounds.width = 300;
+
+		createdWindow.outerBounds.top = bt;
+		createdWindow.outerBounds.left = rt;
+		normalize();
+	}
+
 	if (request.action == "titleclick"){
 		if (isHidden()){
 			show();
