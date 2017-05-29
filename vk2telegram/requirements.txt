@@ -1,0 +1,3 @@
+python-telegram-bot==6.1b2
+vk
+numpy
