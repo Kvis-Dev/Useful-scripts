@@ -19,7 +19,7 @@ SSH_DEST_DIR = '/home/user/megafolser/im/am/cool'
 # LOCAL config
 
 CMD_MD5_TREE = "find -type f -exec md5sum '{}' \;"
-ROOT = os.path.dirname(__file__)
+ROOT = os.path.dirname(os.path.abspath(__file__))
 
 
 def filter_ignore(filenames):
