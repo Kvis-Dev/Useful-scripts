@@ -39,7 +39,7 @@ def main():
 			    location ~ \.php$ {{
 			        include fastcgi_params;
 			        fastcgi_param SCRIPT_FILENAME $domain_path$fastcgi_script_name;
-			        fastcgi_pass php_workers;
+			        fastcgi_pass unix:/run/php/php7.0-fpm.sock;
 			        try_files $uri =404;
 			    }}
 
