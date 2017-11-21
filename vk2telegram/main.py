@@ -7,24 +7,74 @@ import sys
 import time
 import urllib
 
-import io
-import numpy as np
-import requests
+import random
+import string
+import json
+
 import telegram
 import vk
-from PIL import Image
+from PIL import Image, ImageDraw
+import requests
+import io
+import imageio
+
 import shutil
+
+from telegram import InputFile
+
+class Bot2(telegram.Bot):
+    def send_media_group(self, chat_id, media, caption, *args, **kwargs):
+        url = '{0}/sendMediaGroup'.format(self.base_url)
+
+        media_f = []
+        for i, f in enumerate(media):
+            media_f.append({
+                "type":"photo",
+                "media":'attach://file-%s' % i,
+                "caption": caption
+            })
+
+        data = {'chat_id': chat_id, 'media': json.dumps(media_f)}
+
+        if caption:
+            data['caption'] = caption
+
+        return url, data
+
+def to_media_form(data, files):
+    form = []
+    form_boundary = '--' + files[0].boundary
+
+    for name in iter(data):
+        value = data[name]
+        form.extend([
+            form_boundary, 'Content-Disposition: form-data; name="%s"' % name, '', str(value)
+        ])
+
+
+    for i, file in enumerate(files):
+        form.extend([
+            form_boundary, 'Content-Disposition: form-data; name="%s"; filename="%s"' %
+                           ('file-%s'%i, file.filename),
+                           'Content-Type: %s' % file.mimetype, '', file.input_file_content
+        ])
+
+    form.append('--' + files[0].boundary + '--')
+    form.append('')
+
+    return files[0].headers, InputFile._parse(form)
+
 
 logger = logging.getLogger('vk')
 logger.setLevel(logging.DEBUG)
-APP_ID = 000000
-CHANNEL = 'Розваги'
-CHAT_ID = '@memesFromKvis'
-BOT_TOKEN = '00000000000000000000'
+APP_ID = 12345678
+CHANNEL = '<vk channel name>'
+CHAT_ID = '@chat_id'
+BOT_TOKEN = '00000000000000000000000000'
 
 IGNORE_EXT = ['srt', 'doc']
 
-bot = telegram.Bot(BOT_TOKEN)
+bot = Bot2(BOT_TOKEN)
 
 if not os.path.isfile('access_token.txt'):
     access_token = ''
@@ -120,6 +170,87 @@ def sanitize(sss: str):
     return sss
 
 
+def images_to_gif(urls):
+    images = []
+
+    for im_url in urls:
+        im = Image.open(requests.get(im_url, stream=True).raw)
+        # imgByteArr = io.BytesIO()
+        # im.save(imgByteArr, 'JPEG')
+        # imgByteArr.seek(0)
+        #
+        # images.append(imageio.imread(imgByteArr))
+        images.append(im)
+
+    max_w = 0
+    max_h = 0
+
+    for image in images:
+        # print(image, image.size, image.shape, type(image))
+        width, height = image.size
+        if width > max_w:
+            max_w = width
+        if height > max_h:
+            max_h = height
+
+    if max_w > 1280:
+        max_w = 1280
+
+    if max_h > 1280:
+        max_h = 1280
+
+    new_images = []
+    ii = 0
+    for image in images:
+        bigim = Image.new("RGB", (max_w, max_h), (255, 255, 255))
+        img = image
+        width, height = image.size
+
+        new_width_c1 = max_w
+        new_height_c1 = new_width_c1 * height / width
+
+        new_height_c2 = max_h
+        new_width_c2 = new_height_c2 * width / height
+
+        if (width / height) > (max_w / max_h):
+            new_width = new_width_c1
+            new_height = new_height_c1
+        else:
+            new_width = new_width_c2
+            new_height = new_height_c2
+
+        img = img.resize((int(new_width), int(new_height)), Image.ANTIALIAS)
+        bigim.paste(img, (int((max_w - new_width) / 2), int((max_h - new_height) / 2)))
+
+        circle_w = max_h / 100 * 2
+        draw = ImageDraw.Draw(bigim)
+
+        for i in range(len(images)):
+            x = (max_w * 0.2) + (((max_w * 0.8) / len(images)) * i) - circle_w/2
+            if ii == i:
+                fill = 'red'
+                outline = 'white'
+            else:
+                outline = 'black'
+                fill = 'white'
+            draw.ellipse((x, circle_w, x + circle_w, circle_w + circle_w), outline=outline, fill=fill)
+        ii += 1
+        new_images.append(bigim)
+
+    save_imgs = []
+    for image in new_images:
+        imgByteArr = io.BytesIO()
+        image.save(imgByteArr, 'JPEG')
+        imgByteArr.seek(0)
+        save_imgs.append(imageio.imread(imgByteArr))
+
+    imgByteArr = io.BytesIO()
+    # kwargs_write = {'fps': 5.0, 'quantizer': 'nq'}
+    imageio.mimsave(imgByteArr, save_imgs, format='GIF', duration=2)
+    imgByteArr.seek(0)
+    return imgByteArr
+
+
 for item in news['items']:
 
     if not item['type'] == 'post':
@@ -200,34 +331,34 @@ for item in news['items']:
             remember_sent(item)
 
         elif all_images(item):
-            images = []
-            for attach in item['attachments']:
-                im = Image.open(requests.get(attach['photo']['src_big'], stream=True).raw).convert('RGB')
-                images.append(im)
+            # urls = []
+            # for attach in item['attachments']:
+            #     urls.append(attach['photo']['src_big'])
 
-            min_shape = sorted([(np.sum(i.size), i.size) for i in images])[0][1]
-
-            imgs_comb = np.hstack((np.asarray(i.resize(min_shape)) for i in images))
-            imgs_comb = Image.fromarray(imgs_comb)
-
-            imgByteArr = io.BytesIO()
-            imgs_comb.save(imgByteArr, 'JPEG')
-            imgByteArr.seek(0)
-
-            width, height = imgs_comb.size
-
+            # f = images_to_gif(urls)
             caption = item['text']
 
             if len(caption) > 200:
                 bot.send_message(text=caption, chat_id=CHAT_ID)
                 caption = ''
 
-            if (width / height) > 2:
-                upload_doc(imgByteArr, caption, 'file.jpg')
-            else:
-                bot.send_photo(chat_id=CHAT_ID, caption=caption, photo=imgByteArr)
+            # upload_doc(f, caption)
 
-            remember_sent(item)
+            # remember_sent(item)
+            media_files = []
+            for attach in item['attachments']:
+                im = Image.open(requests.get(attach['photo']['src_big'], stream=True).raw)
+                imgByteArr = io.BytesIO()
+                im.save(imgByteArr, 'JPEG')
+                imgByteArr.seek(0)
+
+                ifile = InputFile({'photo': imgByteArr})
+                media_files.append(ifile)
+
+            url, data = bot.send_media_group(chat_id=CHAT_ID, caption=caption, media=media_files)
+            headers, mform = to_media_form(data, media_files)
+            bot._request._request_wrapper('POST', url, body=mform, headers=headers)
+            # remember_sent(item)
 
         else:
             # print("CASE 2")
